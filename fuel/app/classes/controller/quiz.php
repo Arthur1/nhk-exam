@@ -51,7 +51,7 @@ class Controller_Quiz extends Controller_Template
 	{
 		$this->template->title = '問題';
 		$this->template->contents = View::forge('quiz/q');
-		$this->acquire_statuses();
+		$this->get_statuses();
 		$quiz_id = Arr::get($this->statuses, 'question_ids.'.Arr::get($this->statuses, 'progress'));
 		if ($quiz_id === null)
 		{
@@ -91,7 +91,7 @@ class Controller_Quiz extends Controller_Template
 	{
 		$this->template->title = '解答';
 		$this->template->contents = View::forge('quiz/a');
-		$this->acquire_statuses();
+		$this->get_statuses();
 		$quiz_id = Arr::get($this->statuses, 'question_ids.'.Arr::get($this->statuses, 'progress'));
 		if ($quiz_id === null)
 		{
@@ -104,6 +104,7 @@ class Controller_Quiz extends Controller_Template
 
 	public function post_a()
 	{
+		$this->get_a();
 		if (! Security::check_token())
 		{
 			$this->template->contents->error = 'お手数ですが、再度送信してください。';
@@ -123,14 +124,15 @@ class Controller_Quiz extends Controller_Template
 		}
 	}
 
-	private function action_success()
+	public function action_result()
 	{
 		$this->template->title = '成績';
 		$this->template->contents = View::forge('quiz/result');
-		$this->acquire_statuses();
+		$this->get_statuses();
+		$this->template->contents->statuses = $this->statuses;
 	}
 
-	private function acquire_statuses()
+	private function get_statuses()
 	{
 		$keys = ['mode', 'progress', 'question_ids', 'result'];
 		foreach ($keys as $key)
